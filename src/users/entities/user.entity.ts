@@ -22,8 +22,11 @@ export class User extends Document {
   @Prop({ required: false, type: [String], enum: Object.values(UserRoleEnum) })
   roles?: UserRoleEnum[];
 
-  @Prop({required: false, default: false})
+  @Prop({ required: false, default: false })
   isActive?: boolean;
+
+  @Prop({ required: false, default: false })
+  userId?: string;
 
 }
 

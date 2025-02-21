@@ -13,16 +13,20 @@ export class UsersService {
     private readonly userModel: Model<User>,
   ) { }
   async create(createUserDto: CreateUserDto) {
-   await  this.userModel.create(createUserDto);
-   return "success";
+    await this.userModel.create(createUserDto);
+    return "success";
   }
 
   findAll() {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
@@ -34,19 +38,19 @@ export class UsersService {
   }
 
 
- async  loginUser(user: any) {
-	try {
-		const dbUser = await this.userModel.findOne({email: user.mail});
-		return dbUser;
-	} catch (error) {
-		await this.userModel.create({
-			email: user.mail,
-			name: user.displayName,
-			externalId: user.id,
-		});
-		const dbUser = await this.userModel.findOne({email: user.mail});
-		return dbUser;
-	}
-}
+  async loginUser(user: any) {
+    try {
+      const dbUser = await this.userModel.findOne({ email: user.mail });
+      return dbUser;
+    } catch (error) {
+      await this.userModel.create({
+        email: user.mail,
+        name: user.displayName,
+        externalId: user.id,
+      });
+      const dbUser = await this.userModel.findOne({ email: user.mail });
+      return dbUser;
+    }
+  }
 
 }
