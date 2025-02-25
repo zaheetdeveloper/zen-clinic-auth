@@ -33,8 +33,12 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async getUserByEmail(email: string) {
+    return await this.userModel.findOne({ email });
+  }
+
+  async remove(id: string) {
+    return await this.userModel.deleteOne({ _id: id });
   }
 
 
