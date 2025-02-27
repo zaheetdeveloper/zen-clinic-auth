@@ -1,7 +1,7 @@
 export enum UserRoleEnum {
    Admin = 'admin',
    Manager = 'manager',
-   Doctor = 'doctor',
+   Practitioner = 'practitioner',
    User = 'user',
    Patient = 'patient'
  }

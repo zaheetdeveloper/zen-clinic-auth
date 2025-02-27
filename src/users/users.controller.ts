@@ -42,4 +42,10 @@ export class UsersController {
   getUserByEmail(@Param('email') email: string) {
     return this.usersService.getUserByEmail(email);
   }
+
+
+  @Get('userId/:userId')
+  async getUserByUserId(@Param('userId') userId: string) {
+    return await this.usersService.getUserByUserId(userId);
+  }
 }

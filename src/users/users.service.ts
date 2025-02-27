@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,8 +13,11 @@ export class UsersService {
     private readonly userModel: Model<User>,
   ) { }
   async create(createUserDto: CreateUserDto) {
-    await this.userModel.create(createUserDto);
-    return "success";
+    const existingUser = await this.userModel.findOne({ email: createUserDto.email });
+    if (existingUser) {
+      throw new BadGatewayException("User already exists");
+    }
+    return await this.userModel.create(createUserDto);
   }
 
   findAll() {
@@ -23,6 +26,7 @@ export class UsersService {
 
   async findOne(id: string) {
     const user = await this.userModel.findById(id);
+    console.log("🚀 ~ UsersService ~ findOne ~ user:", user)
     if (!user) {
       return null;
     }
@@ -55,6 +59,11 @@ export class UsersService {
       const dbUser = await this.userModel.findOne({ email: user.mail });
       return dbUser;
     }
+  }
+
+  async getUserByUserId(userId: string) {
+    const t = await this.userModel.findOne({ userId });
+    return t
   }
 
 }
