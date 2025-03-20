@@ -12,12 +12,18 @@ export class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
   ) { }
+
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.userModel.findOne({ email: createUserDto.email });
-    if (existingUser) {
-      throw new BadGatewayException("User already exists");
+    console.log("🚀 ~ UsersService ~ create ~ createUserDto:", createUserDto)
+    try {
+      const existingUser = await this.userModel.findOne({ email: createUserDto.email });
+      if (existingUser) {
+        throw new BadGatewayException("User already exists");
+      }
+      return await this.userModel.create(createUserDto);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
     }
-    return await this.userModel.create(createUserDto);
   }
 
   findAll() {
@@ -26,7 +32,6 @@ export class UsersService {
 
   async findOne(id: string) {
     const user = await this.userModel.findById(id);
-    console.log("🚀 ~ UsersService ~ findOne ~ user:", user)
     if (!user) {
       return null;
     }
