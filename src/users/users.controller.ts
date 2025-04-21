@@ -39,8 +39,8 @@ export class UsersController {
   }
 
   @Get('email/:email')
-  getUserByEmail(@Param('email') email: string) {
-    return this.usersService.getUserByEmail(email);
+  async getUserByEmail(@Param('email') email: string) {
+    return await this.usersService.getUserByEmail(email);
   }
 
 
