@@ -14,7 +14,6 @@ export class UsersService {
   ) { }
 
   async create(createUserDto: CreateUserDto) {
-    console.log("🚀 ~ UsersService ~ create ~ createUserDto:", createUserDto)
     try {
       const existingUser = await this.userModel.findOne({ email: createUserDto.email });
       if (existingUser) {
