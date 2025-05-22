@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 import { UserRoleEnum } from 'src/shared/enum';
 
 export type UserDocument = HydratedDocument<User>;
@@ -27,6 +27,9 @@ export class User extends Document {
 
   @Prop({ required: false, default: false })
   userId?: string;
+
+  @Prop({ required: false, type: Types.ObjectId, ref: 'Organization' })
+  organization?: Types.ObjectId;
 
 }
 
