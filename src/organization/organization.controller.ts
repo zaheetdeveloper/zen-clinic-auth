@@ -1,9 +1,16 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { OrganizationService } from './organization.service';
-import { MembersToOrganizationDto, CreateOrganizationDto, FilterOrganizationDto, UpdateOrganizationDto } from './organization.dto';
+import {
+  Body, Controller, Delete, Get,
+  Param, Post, Put, Query
+} from '@nestjs/common';
+
+import {
+  MembersToOrganizationDto, CreateOrganizationDto,
+  FilterOrganizationDto, UpdateOrganizationDto
+} from './organization.dto';
+
 import { Organization } from './organization.entity';
 import { User } from 'src/users/entities/user.entity';
-import { isValidObjectId } from 'mongoose';
+import { OrganizationService } from './organization.service';
 
 @Controller('organization')
 export class OrganizationController {
@@ -34,7 +41,7 @@ export class OrganizationController {
     return this.organizationService.deleteOrganization(id);
   }
 
-  @Post(':id/members')
+  @Put(':id/members')
   async addMembersToOrganization(
     @Param('id') id: string,
     @Body() addMembersToOrganizationDto: MembersToOrganizationDto,
@@ -55,4 +62,11 @@ export class OrganizationController {
   async getOrganizationMembers(@Param('id') id: string): Promise<User[]> {
     return this.organizationService.getOrganizationMembers(id);
   }
+
+
+  @Get('organization/:memberId/byId')
+  async getOrgOfMember(@Param('memberId') memberId: string) {
+    return await this.organizationService.getOrgOfMember(memberId)
+  }
+
 }

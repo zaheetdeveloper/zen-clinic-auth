@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateOrganizationDto {
@@ -28,29 +28,27 @@ export class UpdateOrganizationDto {
 
 
 
-export class AddMemberToOrganizationDto {
-   @ApiProperty()
-   @IsString()
-   memberId: string;
-}
-
 
 export class FilterOrganizationDto {
    @ApiProperty({ required: false })
    @IsString()
+   @IsOptional()
    search: string;
 
    @ApiProperty({ required: false })
    @IsArray()
+   @IsOptional()
    @IsString({ each: true })
    memberIds: string[];
 
    @ApiProperty({ required: false })
    @IsNumber()
+   @IsOptional()
    page: number;
 
    @ApiProperty({ required: false })
    @IsNumber()
+   @IsOptional()
    limit: number;
 
 
@@ -60,6 +58,7 @@ export class FilterOrganizationDto {
 export class MembersToOrganizationDto {
    @ApiProperty()
    @IsArray()
+   @IsOptional()
    @IsString({ each: true })
    memberIds: string[];
 }

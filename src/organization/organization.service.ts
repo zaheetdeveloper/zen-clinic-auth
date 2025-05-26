@@ -32,35 +32,45 @@ export class OrganizationService {
    }
 
    async findAllOrganizations(filterOrganizationDto: FilterOrganizationDto): Promise<Organization[]> {
-      const { search, memberIds, page, limit } = filterOrganizationDto;
-      const pageNumber = page || 1;
-      const limitNumber = limit || 10;
-      const query: any = {};
-
-      query.isActive = true;
-
+      const { search, memberIds, page = 1, limit = 10 } = filterOrganizationDto;
+      const pageNumber = parseInt(page as any, 10);
+      const limitNumber = parseInt(limit as any, 10);
+    
+      const query: any = {
+        isActive: true,
+      };
+    
       if (search) {
-         query.$or = [
-            { name: { $regex: search, $options: 'i' } },
-         ];
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+        ];
       }
-
+    
       if (memberIds && memberIds.length > 0) {
-         query.members = { $in: memberIds };
+        query.members = { $in: memberIds };
       }
-
+    
       const skip = (pageNumber - 1) * limitNumber;
+    
       const organizations = await this.organizationModel.find(query)
-         .populate('members')
-         .select('-__v -createdAt -updatedAt')
-         .skip(skip)
-         .limit(limit)
-         .exec();
-
+        .populate({
+          path: 'members',
+          select: '-createdAt -updatedAt -__v -userId -userName',
+        })
+        .select('-__v -createdAt -updatedAt')
+        .skip(skip)
+        .limit(limitNumber)
+        .lean()
+        .exec();
+    
       return organizations;
-   }
+    }
+    
+
    async findOrganizationById(id: string): Promise<Organization | null> {
-      return this.organizationModel.findOne({ _id: id, isActive: true }).exec();
+      return this.organizationModel.findOne({ _id: id, isActive: true })
+      .select('-__v -createdAt -updatedAt')
+      .exec();
    }
 
    async updateOrganization(id: string, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization | null> {
@@ -68,7 +78,9 @@ export class OrganizationService {
    }
 
    async deleteOrganization(id: string): Promise<void> {
-      const organization = await this.organizationModel.findById(id).exec();
+      const organization = await this.organizationModel.findById(id)
+      .select('-__v -createdAt -updatedAt')
+      .exec();
       if (!organization) {
          throw new NotFoundException('Organization not found');
       }
@@ -86,11 +98,28 @@ export class OrganizationService {
    }
 
    async getOrganizationMembers(organizationId: string): Promise<User[]> {
-      const organization = await this.organizationModel.findOne({ _id: organizationId, isActive: true }).exec();
+      const organization = await this.organizationModel.findOne({ _id: organizationId, isActive: true })
+      .select('-__v -createdAt -updatedAt')
+      .exec();
       if (!organization) {
          throw new NotFoundException('Organization not found');
       }
       return this.userModel.find({ _id: { $in: organization.members } }).exec();
    }
+
+   async getOrgOfMember(memberId: string): Promise<Organization> {
+      const org = await this.organizationModel.findOne({
+         members: { $in: [memberId] }
+      })
+      .select('-createdAt -updatedAtx')         
+      .exec();
+
+      if (!org) {
+         throw new NotFoundException(`Organization not found for member ID: ${memberId}`);
+      }
+
+      return org;
+   }
+
 
 }
