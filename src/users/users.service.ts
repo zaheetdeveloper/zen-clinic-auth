@@ -15,7 +15,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const existingUser = await this.userModel.findOne({ email: createUserDto.email });
+      const existingUser = await this.userModel.findOne({ email: createUserDto.email, isActive: true });
       if (existingUser) {
         throw new BadGatewayException("User already exists");
       }
@@ -46,7 +46,13 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    return await this.userModel.deleteOne({ _id: id });
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new BadGatewayException("User not found");
+    }
+    user.isActive = false;
+    await user.save();
+    return user;
   }
 
 
