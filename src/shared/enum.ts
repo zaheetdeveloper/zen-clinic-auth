@@ -5,4 +5,5 @@ export enum UserRoleEnum {
   User = 'user',
   Patient = 'patient',
   Family = 'family',
+  Staff = 'staff',
 }
