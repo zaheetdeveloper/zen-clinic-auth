@@ -1,5 +1,5 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, setRoleDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
@@ -37,10 +37,6 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
   async getUserByEmail(email: string) {
     return await this.userModel.findOne({ email });
   }
@@ -76,4 +72,24 @@ export class UsersService {
     return t
   }
 
+  async setRole(dto: setRoleDto) {
+    const user = await this.userModel.findById(dto.id);
+    if (!user || !user.roles) {
+      throw new BadGatewayException("User not found");
+    }
+    if (user.roles.includes(dto.role)) {
+      throw new BadGatewayException("User already has this role");
+    }
+    user.defaultRole = dto.role;
+    await user.save();
+  }
+
+  async getDefaultRole(id: string) {
+    const user = await this.userModel.findById(id);
+    console.log("🚀 ~ UsersService ~ getDefaultRole ~ user:", user)
+    if (!user || !user.roles) {
+      throw new BadGatewayException("User not found");
+    }
+    return user.defaultRole || '';
+  }
 }
