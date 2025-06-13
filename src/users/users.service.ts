@@ -77,8 +77,8 @@ export class UsersService {
     if (!user || !user.roles) {
       throw new BadGatewayException("User not found");
     }
-    if (user.roles.includes(dto.role)) {
-      throw new BadGatewayException("User already has this role");
+    if (!user.roles.includes(dto.role)) {
+      throw new BadGatewayException("User does not have the role");
     }
     user.defaultRole = dto.role;
     await user.save();
