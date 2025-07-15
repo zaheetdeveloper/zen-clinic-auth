@@ -51,6 +51,19 @@ export class UsersService {
     return user;
   }
 
+  async usersByRole(role: string | string[]) {
+    const query: any = {};
+
+    if (Array.isArray(role)) {
+      query.roles = { $in: role };
+    } else {
+      query.roles = role;
+    }
+
+    return this.userModel.find(query);
+  }
+
+
 
   async loginUser(user: any) {
     try {

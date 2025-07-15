@@ -51,6 +51,14 @@ export class UsersController {
   }
 
 
+  @Get('role/:role')
+  async getUsersByRole(@Param('role') role: string) {
+    return await this.usersService.usersByRole(role);
+  }
+
+
+
+
   @Get('userId/:userId')
   async getUserByUserId(@Param('userId') userId: string) {
     return await this.usersService.getUserByUserId(userId);
