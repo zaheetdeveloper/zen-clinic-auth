@@ -7,17 +7,17 @@ import { ConfigModule } from '@nestjs/config';
 import { OrganizationModule } from './organization/organization.module';
 import * as dotenv from 'dotenv';
 
-
 dotenv.config();
-
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
-      envFilePath: '.env', 
+      isGlobal: true,
+      envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.DATA_BASE_URL + '/' + process.env.DB_NAME),
+    MongooseModule.forRoot(
+      process.env.DATA_BASE_URL + '/' + process.env.DB_NAME,
+    ),
     //  MongooseModule.forRootAsync({
     //   imports: [ConfigModule],
     //   useFactory: (config: ConfigService) => ({
