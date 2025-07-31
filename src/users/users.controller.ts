@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, getDefaultRoleDto, setRoleDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -17,6 +18,17 @@ export class UsersController {
     return await this.usersService.loginUser(createUserDto);
   }
 
+  @Put('setRole')
+  async setRole(@Body() dto: setRoleDto) {
+    return await this.usersService.setRole(dto);
+  }
+
+  @Get('getDefaultRole')
+  async getDefaultRole(@Query() dto: getDefaultRoleDto) {
+    return await this.usersService.getDefaultRole(dto.id);
+  }
+
+
 
   @Get()
   async findAll() {
@@ -28,11 +40,6 @@ export class UsersController {
     return await this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.update(+id, updateUserDto);
-  }
-
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.usersService.remove(id);
@@ -42,6 +49,14 @@ export class UsersController {
   async getUserByEmail(@Param('email') email: string) {
     return await this.usersService.getUserByEmail(email);
   }
+
+
+  @Get('role/:role')
+  async getUsersByRole(@Param('role') role: string) {
+    return await this.usersService.usersByRole(role);
+  }
+
+
 
 
   @Get('userId/:userId')

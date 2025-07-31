@@ -1,5 +1,5 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, setRoleDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
@@ -15,7 +15,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const existingUser = await this.userModel.findOne({ email: createUserDto.email });
+      const existingUser = await this.userModel.findOne({ email: createUserDto.email, isActive: true });
       if (existingUser) {
         throw new BadGatewayException("User already exists");
       }
@@ -37,17 +37,32 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
   async getUserByEmail(email: string) {
     return await this.userModel.findOne({ email });
   }
 
   async remove(id: string) {
-    return await this.userModel.deleteOne({ _id: id });
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new BadGatewayException("User not found");
+    }
+    user.isActive = false;
+    await user.save();
+    return user;
   }
+
+  async usersByRole(role: string | string[]) {
+    const query: any = {};
+
+    if (Array.isArray(role)) {
+      query.roles = { $in: role };
+    } else {
+      query.roles = role;
+    }
+
+    return this.userModel.find(query);
+  }
+
 
 
   async loginUser(user: any) {
@@ -70,4 +85,24 @@ export class UsersService {
     return t
   }
 
+  async setRole(dto: setRoleDto) {
+    const user = await this.userModel.findById(dto.id);
+    if (!user || !user.roles) {
+      throw new BadGatewayException("User not found");
+    }
+    if (!user.roles.includes(dto.role)) {
+      throw new BadGatewayException("User does not have the role");
+    }
+    user.defaultRole = dto.role;
+    await user.save();
+  }
+
+  async getDefaultRole(id: string) {
+    const user = await this.userModel.findById(id);
+    console.log("🚀 ~ UsersService ~ getDefaultRole ~ user:", user)
+    if (!user || !user.roles) {
+      throw new BadGatewayException("User not found");
+    }
+    return user.defaultRole || '';
+  }
 }
