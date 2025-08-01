@@ -66,7 +66,6 @@ export class OrganizationController {
     @Param('slug') slug: string,
     @Body() addMembersToOrganizationDto: MembersToOrganizationDto,
   ): Promise<Organization | null> {
-    // if memberIds is not an array of strings, convert it to an array of strings
     if (!Array.isArray(addMembersToOrganizationDto.memberIds)) {
       addMembersToOrganizationDto.memberIds = [
         addMembersToOrganizationDto.memberIds,
