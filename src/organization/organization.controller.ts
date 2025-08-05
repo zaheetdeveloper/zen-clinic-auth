@@ -93,7 +93,7 @@ export class OrganizationController {
     return this.organizationService.getOrganizationMembers(slug);
   }
 
-  @Get('organization/:memberId/byId')
+  @Get(':memberId/byId')
   async getOrgOfMember(@Param('memberId') memberId: string) {
     return await this.organizationService.getOrgOfMember(memberId);
   }

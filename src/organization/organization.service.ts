@@ -187,7 +187,7 @@ export class OrganizationService {
       .findOne({
         members: { $in: [memberId] },
       })
-      .select('-createdAt -updatedAtx')
+      .select('-createdAt -updatedAt -_id -isActive  -__v')
       .exec();
 
     if (!org) {
